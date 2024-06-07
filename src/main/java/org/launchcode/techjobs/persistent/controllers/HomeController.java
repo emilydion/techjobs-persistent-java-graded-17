@@ -31,13 +31,11 @@ public class HomeController {
     @Autowired
     private JobRepository jobRepository;
 
-
-
     @RequestMapping("/")
     public String index(Model model) {
 
         model.addAttribute("title", "MyJobs");
-
+        model.addAttribute("jobs", jobRepository.findAll());
         return "index";
     }
 
@@ -62,13 +60,12 @@ public class HomeController {
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
         newJob.setSkills(skillObjs);
 
-        return "redirect:/";
+        return "redirect:";
     }
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
-
-            return "view";
+        return "view";
     }
 
 }
