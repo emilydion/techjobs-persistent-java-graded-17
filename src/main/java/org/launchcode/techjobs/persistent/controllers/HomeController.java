@@ -1,6 +1,8 @@
 package org.launchcode.techjobs.persistent.controllers;
 
 import jakarta.validation.Valid;
+import org.launchcode.techjobs.persistent.models.AbstractEntity;
+import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
 import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
@@ -33,7 +35,6 @@ public class HomeController {
 
     @RequestMapping("/")
     public String index(Model model) {
-
         model.addAttribute("title", "MyJobs");
         model.addAttribute("jobs", jobRepository.findAll());
         return "index";
@@ -57,15 +58,28 @@ public class HomeController {
             return "add";
         }
 
+        Employer employer = employerRepository.findById(employerId).orElse(new Employer());
+
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+
+        newJob.setEmployer(employer);
         newJob.setSkills(skillObjs);
+
+        jobRepository.save(newJob);
 
         return "redirect:";
     }
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
-        return "view";
+        Optional optJob = jobRepository.findById(jobId);
+        if (optJob.isPresent()) {
+            Job job = (Job) optJob.get();
+            model.addAttribute("job", job);
+            return "view";
+        } else {
+            return "redirect:../";
+        }
     }
 
 }
